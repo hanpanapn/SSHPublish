@@ -6,9 +6,9 @@
 
 ```js
 
-let article = require("./SSHPublish");
+let ssh = require("./SSHPublish");
  
-let upload = new article({
+let res = new ssh({
   host: "0.0.0.0",
   account: "root",
   password: "xxxx",
