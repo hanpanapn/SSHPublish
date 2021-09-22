@@ -1,15 +1,29 @@
 {
-  "name": "tewst",
+  "name": "soldier",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Simple tool for uploading files to the server",
+  "bin": {
+    "soldier": "bin/index.js"
   },
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "uploading",
+    "ssh",
+    "ftp"
+  ],
+  "author": "hanpanpan@outlook.com",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hanpanapn/SSHPublish.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hanpanapn/SSHPublish/issues"
+  },
+  "homepage": "https://github.com/hanpanapn/SSHPublish",
   "dependencies": {
+    "commander": "^2.15.1",
     "chalk": "^4.1.2",
     "ssh2": "^1.4.0"
-  }
+  },
+  "devDependencies": {}
 }
