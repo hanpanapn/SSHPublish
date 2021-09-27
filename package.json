@@ -1,6 +1,6 @@
 {
   "name": "soldier",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Simple tool for uploading files to the server",
   "bin": {
     "soldier": "bin/index.js"
