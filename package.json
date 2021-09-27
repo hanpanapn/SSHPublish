@@ -1,6 +1,6 @@
 {
   "name": "soldier",
-  "version": "1.0.2",
+  "version": "1.0.9",
   "description": "Simple tool for uploading files to the server",
   "bin": {
     "soldier": "bin/index.js"
@@ -21,9 +21,9 @@
   },
   "homepage": "https://github.com/hanpanapn/SSHPublish",
   "dependencies": {
-    "commander": "^2.15.1",
     "chalk": "^4.1.2",
+    "commander": "^2.15.1",
+    "shelljs": "^0.8.4",
     "ssh2": "^1.4.0"
-  },
-  "devDependencies": {}
+  }
 }

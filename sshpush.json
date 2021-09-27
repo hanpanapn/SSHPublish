@@ -2,7 +2,7 @@
    "host": "0.0.0.0",
    "account": "root",
    "password": "xxxx",
-   "localPath": "./",
+   "localPath": "./dist/",
    "remotePath": "/home/test/",
-   "fileName": "test.zip"
+   "fileName": "build.zip"
 }
