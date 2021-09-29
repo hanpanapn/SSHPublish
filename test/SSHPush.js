@@ -1,7 +1,7 @@
 
 
 
-const chalk= require('chalk')
+const chalk = require('chalk')
 const shelljs = require('shelljs')
 const ssh2 = require("ssh2");
 
@@ -9,96 +9,83 @@ const host = Symbol("host");
 const account = Symbol("account");
 const password = Symbol("password");
 
+const sftp = Symbol("sftp");
+const sshClient = Symbol("sshClient");
+
 
 class SSHPush {
 
-  constructor(opt={}) {
+  constructor(opt = {}) {
+    /**
+     * 连接状态，close:关闭，open:开启
+     */
+    this.status = 'close'
+
     //constructor是一个构造方法，用来接收参数
     this[host] = opt.host;
+
     this[account] = opt.account;
     this[password] = opt.password;
 
-    this.sftp = null;
-    this.sshClient = null;
-    this.lo;
-    this.ssh=null;
+    this[sftp] = {};
+    this[sshClient] = new ssh2.Client();
+
+
+
   }
   connect() {
     //这是一个类的方法，注意千万不要加上function
     let result = new Promise((resolve, reject) => {
-      this.sshClient = new this.ssh2.Client();
-      this.sshClient
+
+      this[sshClient]
         .connect({
-          host: this.host,
+          host: this[host],
           port: 22,
-          username: this.account,
-          password: this.password,
+          username: this[account],
+          password: this[password],
         })
-        .on("ready", (error, ssh) => {
+        .on("ready", async () => {
           console.log(chalk.green('connect is ok'));
-          this.ssh=ssh
-          this.sshClient.sftp((err, sftp) => {
-            this.sftp = sftp;
-            resolve(true);
-          });
+          this.status = 'open'
+          this[sftp] = await this.getSftpClient()
+          resolve(true);
+
         })
         .on("error", (err) => {
-          console.log(chalk.red('connect is error'));
+          console.log(chalk.bold.red('connect is error:', err.message));
           reject(false);
         });
     });
     return result;
   }
-  async fastPut(opt) {
-    await this.connect();
-    await this.zip({fileName:'build.zip'})
-    let result = new Promise((resolve, reject) => {
-      this.sftp.fastPut(
-        opt.localPath + opt.fileName,
-        opt.remotePath + opt.fileName,
-        (err) => {
-          shelljs.rm('-rf', opt.localPath + opt.fileName);
-          this.uploadCallBack(err, opt);
-        }
+  put(opt) {
+    return new Promise(async (resolve, reject) => {
+      this[sftp].fastPut(
+        opt.localPath,
+        opt.remotePath,
+        (err) => this.uploadCallBack(err, opt, resolve, reject)
       );
-    });
-    return result;
+    })
   }
-
-  //上传完回调，
-  async uploadCallBack(err, opt) {
-    if (!err) {
-      let res = await this.unzip(opt);
-      if (res) {
-        console.log(this.chalk.yellow("upload done"));
-
-        this.sshClient.end();
-      }
+  //上传回调
+  uploadCallBack(err, opt, resolve, reject) {
+    if (typeof err !== 'undefined') {
+      console.log(chalk.red.bold(err));
+      reject(false)
     } else {
-      console.log(chalk.red(err.message));
-      this.sshClient.end();
+      resolve(true)
     }
+
   }
-  //压缩
-  zip(opt){
-    let shellStr=`zip -r ./dist/${opt.fileName} ./dist/`
+  //获取sftp客户端 应该是私有方法
+  getSftpClient() {
     return new Promise((resolve, reject) => {
-      shelljs.exec(shellStr);
-      resolve(true);
-    });
-  }
-  //解压
-  unzip(opt) {
-    return new Promise((resolve, reject) => {
-      let shellStr = `cd ${opt.remotePath} && unzip -o ${opt.fileName} && mv ./dist/* ./ && rm -rf ./dist`;
-      //解压
-      this.sshClient.exec(shellStr, { ssh: this.ssh }, (err, stdout, stderr) => {
-        this.sshClient.exec(`rm -rf ${opt.remotePath + opt.fileName}`, () => {
-          resolve(true);
-        });
+      this[sshClient].sftp((err, sftp) => {
+        resolve(sftp);
       });
-    });
+    })
   }
+
 }
 
 module.exports = SSHPush;
