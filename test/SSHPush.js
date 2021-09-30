@@ -8,7 +8,7 @@ const ssh2 = require("ssh2");
 const host = Symbol("host");
 const account = Symbol("account");
 const password = Symbol("password");
-
+//
 const sftp = Symbol("sftp");
 const sshClient = Symbol("sshClient");
 
