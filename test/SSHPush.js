@@ -34,9 +34,7 @@ class SSHPush {
 
   }
   connect() {
-    //这是一个类的方法，注意千万不要加上function
     let result = new Promise((resolve, reject) => {
-
       this[sshClient]
         .connect({
           host: this[host],
@@ -44,8 +42,10 @@ class SSHPush {
           username: this[account],
           password: this[password],
         })
-        .on("ready", async () => {
+        .on("ready", async (err, ssh) => {
           console.log(chalk.green('connect is ok'));
+          console.log("ssh", ssh);
+
           this.status = 'open'
           this[sftp] = await this.getSftpClient()
           resolve(true);
@@ -85,6 +85,7 @@ class SSHPush {
       });
     })
   }
+
 
 }
 
